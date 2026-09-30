@@ -1,0 +1,3 @@
+export type ExtractedJob={externalId?:string;title:string;company:string;location?:string;experienceText?:string;experienceMin?:number;experienceMax?:number;salary?:string;skills:string[];postedText?:string;jobUrl:string;description?:string};
+export type Analysis={eligible:boolean;match_score:number;role_relevance:number;skill_match:number;experience_match:number;matched_skills:string[];missing_skills:string[];strengths:string[];concerns:string[];recommendation:'STRONG_MATCH'|'REVIEW'|'SKIP';reasoning:string};
+export type ScoredJob=ExtractedJob&{id:number;status:string;analysis?:Analysis;error?:string};

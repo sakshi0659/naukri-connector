@@ -1,0 +1,20 @@
+personal:
+  name: ""
+  email: ""
+  phone: ""
+  location: ""
+professional:
+  current_title: ""
+  current_company: ""
+  total_experience_years: null
+  current_ctc: ""
+  expected_ctc: ""
+  notice_period_days: null
+skills: []
+employment: []
+projects: []
+education: []
+certifications: []
+preferences:
+  preferred_locations: []
+  remote_allowed: true

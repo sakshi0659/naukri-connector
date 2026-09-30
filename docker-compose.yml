@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: sqlite:////app/data/job_agent.db
+    ports: ["8000:8000"]
+    volumes: ["job-data:/app/data"]
+    restart: unless-stopped
+volumes:
+  job-data:

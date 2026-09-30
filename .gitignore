@@ -1,0 +1,11 @@
+.env
+*.db
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.venv/
+.pytest_cache/
+backend/data/candidate_profile.yaml
+backend/data/search_preferences.yaml
+storage/

@@ -1,0 +1,14 @@
+roles:
+  - AI Engineer
+  - Generative AI Engineer
+  - GenAI Engineer
+  - LLM Engineer
+  - RAG Engineer
+  - Applied AI Engineer
+  - AI Developer
+experience:
+  minimum: 1
+  maximum: 2
+minimum_analysis_score: 60
+strong_match_score: 80
+auto_fill_score: 80

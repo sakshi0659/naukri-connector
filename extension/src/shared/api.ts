@@ -1,0 +1,19 @@
+import type {Analysis,ExtractedJob,ScoredJob} from './types';import {getNaukriProfileContext,getSession,getSettings} from './storage';
+export async function backend<T>(path:string,init?:RequestInit){const [s,session,context]=await Promise.all([getSettings(),getSession(),getNaukriProfileContext()]);const r=await fetch(`${s.backendUrl}${path}`,{...init,headers:{'Content-Type':'application/json',...(session.authToken?{Authorization:`Bearer ${session.authToken}`}:{}),...(context.naukriProfileContext?{'X-Naukri-Profile-Key':context.naukriProfileContext}:{}),...(init?.headers||{})}});if(!r.ok)throw new Error((await r.json().catch(()=>({}))).detail||`Backend ${r.status}`);return r.json() as Promise<T>}
+export type AuthResponse={token:string;user:{id:number;email:string}};
+export async function register(email:string,password:string){return backend<AuthResponse>('/api/auth/register',{method:'POST',body:JSON.stringify({email,password})})}
+export async function login(email:string,password:string){return backend<AuthResponse>('/api/auth/login',{method:'POST',body:JSON.stringify({email,password})})}
+export async function forgotPassword(email:string){return backend<{ok:boolean;message:string}>('/api/auth/forgot-password',{method:'POST',body:JSON.stringify({email})})}
+export async function resetPassword(token:string,password:string){return backend<{ok:boolean;message:string}>('/api/auth/reset-password',{method:'POST',body:JSON.stringify({token,password})})}
+export async function me(){return backend<{user:{id:number;email:string}}>('/api/auth/me')}
+function payload(job:ExtractedJob){return {external_id:job.externalId,title:job.title,company:job.company,location:job.location,experience_text:job.experienceText,salary:job.salary,skills:job.skills,posted_text:job.postedText,job_url:job.jobUrl,description:job.description}}
+export async function importJobs(jobs:ExtractedJob[]){return backend<{id:number;status:string;title:string;analysis?:Analysis;match_score?:number;filter_reason?:string}[]>('/api/jobs/import',{method:'POST',body:JSON.stringify({jobs:jobs.map(payload)})})}
+export async function analyzeJobs(ids:number[],force=false){return backend<{id:number;title:string;analysis?:Analysis;error?:string}[]>('/api/jobs/analyze-batch',{method:'POST',body:JSON.stringify({job_ids:ids,force})})}
+export async function health(){return backend<{ok:boolean;groq_configured:boolean}>('/api/health')}
+export async function stats(){return backend<{jobs:number;analyzed:number;strong_matches:number;review:number;skipped:number;prepared:number;applied:number}>('/api/stats')}
+export type Dashboard={summary:{found:number;strong:number;review:number;low:number;skipped:number;pending:number};top_matches:{id:number;title:string;company:string;job_url:string;match_score:number;recommendation:string;analysis:Analysis}[];skill_gaps:{skill:string;count:number}[];skip_reasons:{reason:string;count:number}[];insights:{roles:{label:string;count:number}[];experience:{label:string;count:number}[];common_skills:{skill:string;count:number}[];salary_disclosed:number}}
+export async function dashboard(){return backend<Dashboard>('/api/dashboard')}
+export async function profile(){return backend<Record<string,any>>('/api/profile')}
+export async function updateProfile(value:Record<string,any>){return backend<Record<string,any>>('/api/profile',{method:'PUT',body:JSON.stringify(value)})}
+export async function classifyQuestion(question:string,jobDescription=''){return backend<{kind:string;requires_manual:boolean}>('/api/screening/classify',{method:'POST',body:JSON.stringify({question,job_description:jobDescription})})}
+export async function answerQuestion(question:string,jobDescription=''){return backend<{answer:string;source:string}>('/api/screening/answer',{method:'POST',body:JSON.stringify({question,job_description:jobDescription})})}
